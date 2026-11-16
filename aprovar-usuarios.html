@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprovar Usuários - Inventory</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+
+    <!-- Cabeçalho -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">
+                    Aprovar Usuários
+                </h1>
+
+                <p class="text-sm text-gray-500 mt-1">
+                    Gerencie as solicitações de acesso à sua loja.
+                </p>
+            </div>
+
+            <a href="usuario.html"
+                class="text-blue-600 font-semibold hover:text-blue-800 transition">
+                Voltar ao painel
+            </a>
+
+        </div>
+    </header>
+
+    <!-- Conteúdo -->
+    <main class="max-w-7xl mx-auto px-6 py-10">
+
+        <div class="mb-8">
+            <h2 class="text-xl font-bold text-gray-800">
+                Solicitações pendentes
+            </h2>
+
+            <p class="text-gray-500 mt-1">
+                Aprove ou rejeite os funcionários que solicitaram acesso.
+            </p>
+        </div>
+
+        <!-- Mensagem -->
+        <div id="mensagem"
+            class="hidden mb-6 p-4 rounded-lg text-sm">
+        </div>
+
+        <!-- Carregamento -->
+        <div id="carregando" class="text-center py-12">
+            <p class="text-gray-500">Carregando solicitações...</p>
+        </div>
+
+        <!-- Lista de usuários -->
+        <div id="listaUsuarios"
+            class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        </div>
+
+        <!-- Nenhum usuário -->
+        <div id="semUsuarios"
+            class="hidden bg-white rounded-2xl shadow-sm border border-gray-200 p-10 text-center">
+
+            <div class="text-5xl mb-4">✓</div>
+
+            <h3 class="text-xl font-bold text-gray-800">
+                Tudo em dia!
+            </h3>
+
+            <p class="text-gray-500 mt-2">
+                Não existem usuários aguardando aprovação.
+            </p>
+
+        </div>
+
+    </main>
+
+    <script>
+        const API_URL = "http://localhost:8081";
+
+        const token = localStorage.getItem("token");
+        const usuarioSalvo = localStorage.getItem("usuario");
+
+        // Verifica autenticação
+        if (!token || !usuarioSalvo) {
+            window.location.href = "login.html";
+        }
+
+        let usuarioLogado = null;
+
+        try {
+            usuarioLogado = JSON.parse(usuarioSalvo);
+        } catch (erro) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("usuario");
+            window.location.href = "login.html";
+        }
+
+        // Somente administrador pode acessar
+        if (usuarioLogado && usuarioLogado.funcao !== "ADMINISTRADOR") {
+            window.location.href = "usuario.html";
+        }
+
+        const listaUsuarios = document.getElementById("listaUsuarios");
+        const carregando = document.getElementById("carregando");
+        const semUsuarios = document.getElementById("semUsuarios");
+        const mensagem = document.getElementById("mensagem");
+
+        function mostrarMensagem(texto, sucesso = true) {
+            mensagem.textContent = texto;
+
+            mensagem.className = sucesso
+                ? "mb-6 p-4 rounded-lg text-sm bg-green-100 text-green-700"
+                : "mb-6 p-4 rounded-lg text-sm bg-red-100 text-red-700";
+        }
+
+        async function carregarUsuarios() {
+            carregando.classList.remove("hidden");
+            listaUsuarios.innerHTML = "";
+            semUsuarios.classList.add("hidden");
+            mensagem.classList.add("hidden");
+
+            try {
+                const resposta = await fetch(`${API_URL}/usuarios/pendentes`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (!resposta.ok) {
+                    throw new Error("Não foi possível carregar os usuários pendentes.");
+                }
+
+                const usuarios = await resposta.json();
+
+                carregando.classList.add("hidden");
+
+                if (!Array.isArray(usuarios) || usuarios.length === 0) {
+                    semUsuarios.classList.remove("hidden");
+                    return;
+                }
+
+                usuarios.forEach(usuario => {
+                    criarCardUsuario(usuario);
+                });
+
+            } catch (erro) {
+                carregando.classList.add("hidden");
+                mostrarMensagem(erro.message, false);
+            }
+        }
+
+        function criarCardUsuario(usuario) {
+            const card = document.createElement("div");
+
+            card.className =
+                "bg-white rounded-2xl shadow-sm border border-gray-200 p-6";
+
+            const nome = `${usuario.nome || ""} ${usuario.sobrenome || ""}`.trim();
+
+            const titulo = document.createElement("h3");
+            titulo.className = "text-lg font-bold text-gray-800";
+            titulo.textContent = nome || "Usuário sem nome";
+
+            const cpf = document.createElement("p");
+            cpf.className = "text-sm text-gray-500 mt-2";
+            cpf.textContent = `CPF: ${usuario.cpf || "Não informado"}`;
+
+            const funcao = document.createElement("p");
+            funcao.className = "text-sm text-gray-500 mt-1";
+            funcao.textContent = `Função: ${usuario.funcao || "Não informada"}`;
+
+            const status = document.createElement("span");
+            status.className =
+                "inline-block mt-4 px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700";
+            status.textContent = usuario.status || "PENDENTE";
+
+            const botoes = document.createElement("div");
+            botoes.className = "flex gap-3 mt-6";
+
+            const botaoAprovar = document.createElement("button");
+            botaoAprovar.type = "button";
+            botaoAprovar.textContent = "Aprovar";
+            botaoAprovar.className =
+                "flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition";
+
+            botaoAprovar.addEventListener("click", () => {
+                alterarStatus(usuario.id, "aprovar", botaoAprovar, botaoRejeitar);
+            });
+
+            const botaoRejeitar = document.createElement("button");
+            botaoRejeitar.type = "button";
+            botaoRejeitar.textContent = "Rejeitar";
+            botaoRejeitar.className =
+                "flex-1 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition";
+
+            botaoRejeitar.addEventListener("click", () => {
+                alterarStatus(usuario.id, "rejeitar", botaoAprovar, botaoRejeitar);
+            });
+
+            botoes.appendChild(botaoAprovar);
+            botoes.appendChild(botaoRejeitar);
+
+            card.appendChild(titulo);
+            card.appendChild(cpf);
+            card.appendChild(funcao);
+            card.appendChild(status);
+            card.appendChild(botoes);
+
+            listaUsuarios.appendChild(card);
+        }
+
+        async function alterarStatus(id, acao, botaoAprovar, botaoRejeitar) {
+            const confirmacao = acao === "aprovar"
+                ? "Deseja realmente aprovar este usuário?"
+                : "Deseja realmente rejeitar este usuário?";
+
+            if (!confirm(confirmacao)) {
+                return;
+            }
+
+            botaoAprovar.disabled = true;
+            botaoRejeitar.disabled = true;
+
+            try {
+                const resposta = await fetch(
+                    `${API_URL}/usuarios/${id}/${acao}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }
+                );
+
+                if (!resposta.ok) {
+                    throw new Error(`Não foi possível ${acao} o usuário.`);
+                }
+
+                mostrarMensagem(
+                    acao === "aprovar"
+                        ? "Usuário aprovado com sucesso!"
+                        : "Usuário rejeitado com sucesso!"
+                );
+
+                await carregarUsuarios();
+
+            } catch (erro) {
+                mostrarMensagem(erro.message, false);
+
+                botaoAprovar.disabled = false;
+                botaoRejeitar.disabled = false;
+            }
+        }
+
+        carregarUsuarios();
+    </script>
+
+</body>
+</html>

@@ -1,11 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cadastro de Produtos - Painel</title>
+  <title>Cadastro de Produto - StockHub</title>
 
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
@@ -17,296 +17,577 @@
 
 <body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
 
-  <!-- ========================= -->
-  <!-- Header -->
-  <!-- ========================= -->
-
+  <!-- HEADER -->
   <header class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      
-      <!-- Logo -->
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold">
-          P
-        </div>
-        <h1 class="text-xl font-bold text-gray-800">
-          Painel
-        </h1>
-      </div>
 
-      <!-- Menu Desktop -->
-      <div class="hidden md:flex items-center gap-6">
-        <a href="cadastro-usuarios.html" class="text-gray-500 hover:text-blue-600 transition">
-          Cadastro de usuários
-        </a>
-        <a href="cadastro-produtos.html" class="text-blue-600 font-medium transition">
-          Produtos
-        </a>
-        <a href="#sair" class="text-gray-500 hover:text-red-600 transition">
+      <!-- LOGO -->
+      <h1 class="text-xl font-bold text-black flex items-center gap-1 shrink-0">
+        Stock
+        <span class="bg-blue-600 text-white px-2 py-1 rounded-lg">
+          Hub
+        </span>
+      </h1>
+
+      <!-- INFORMAÇÕES E MENU -->
+      <div class="flex items-center gap-3 md:gap-6">
+
+        <!-- NOME DA PÁGINA -->
+        <span class="text-sm text-gray-500 hidden sm:block">
+          Cadastro de Produto
+        </span>
+
+        <!-- USUÁRIO -->
+        <span
+          id="nomeUsuario"
+          class="text-sm text-gray-600 font-medium truncate max-w-[110px] sm:max-w-none">
+        </span>
+
+        <!-- SAIR DESKTOP -->
+        <a
+          href="login.html"
+          id="linkSair"
+          class="hidden md:block text-gray-500 hover:text-red-600 transition">
           Sair
         </a>
+
+        <!-- BOTÃO MENU MOBILE -->
+        <button
+          id="menuButton"
+          type="button"
+          aria-label="Abrir menu"
+          aria-expanded="false"
+          class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg text-gray-700 hover:bg-gray-200 transition">
+
+          <svg
+            id="menuIcon"
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-7 h-7"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2">
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
       </div>
-
-      <!-- Burger Button -->
-      <button
-        id="menuButton"
-        type="button"
-        aria-label="Abrir menu"
-        aria-expanded="false"
-        class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg text-gray-700 hover:bg-gray-200 transition"
-      >
-        <svg id="menuIcon" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-      </button>
-
     </div>
   </header>
 
-  <!-- ========================= -->
-  <!-- Overlay -->
-  <!-- ========================= -->
-  <div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden md:hidden"></div>
+  <!-- OVERLAY MOBILE -->
+  <div
+    id="overlay"
+    class="fixed inset-0 bg-black/40 z-40 hidden md:hidden">
+  </div>
 
-  <!-- ========================= -->
-  <!-- Menu Lateral Mobile -->
-  <!-- ========================= -->
+  <!-- MENU MOBILE -->
   <aside
     id="sideMenu"
-    class="fixed top-0 right-0 h-full w-72 bg-white z-50 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out md:hidden"
-  >
+    class="fixed top-0 right-0 h-full w-72 bg-white z-50 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out md:hidden">
+
     <div class="h-16 px-6 border-b border-gray-200 flex items-center justify-between">
-      <h2 class="text-lg font-bold text-gray-800">Menu</h2>
-      <button id="closeMenu" type="button" aria-label="Fechar menu" class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-200 transition">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+
+      <h2 class="text-lg font-bold text-gray-800">
+        Menu
+      </h2>
+
+      <button
+        id="closeMenu"
+        type="button"
+        aria-label="Fechar menu"
+        class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-200 transition">
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2">
+
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
+
     </div>
+
     <nav class="p-6 flex flex-col gap-2">
-      <a href="cadastro-usuarios.html" class="px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition font-medium">
-        Cadastro de usuários
-      </a>
-      <a href="cadastro-produtos.html" class="px-4 py-3 rounded-lg bg-blue-50 text-blue-600 transition font-medium">
-        Produtos
-      </a>
-      <a href="#sair" class="px-4 py-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition font-medium">
+
+      <!-- USUÁRIO MOBILE -->
+      <span
+        id="nomeUsuarioMobile"
+        class="px-4 py-3 text-gray-500 font-medium border-b border-gray-100 mb-2">
+      </span>
+
+      <!-- SAIR MOBILE -->
+      <a
+        href="login.html"
+        id="linkSairMobile"
+        class="px-4 py-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition font-medium">
         Sair
       </a>
+
     </nav>
   </aside>
 
-  <!-- ========================= -->
-  <!-- Conteúdo Principal -->
-  <!-- ========================= -->
-
+  <!-- CONTEÚDO PRINCIPAL -->
   <main class="flex-1 pt-24 pb-12 px-6">
     <div class="max-w-4xl mx-auto">
 
-      <!-- Botão Voltar -->
-      <a href="estoque.html" class="inline-flex items-center text-gray-500 hover:text-blue-600 transition mb-6 font-medium gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      <!-- VOLTAR -->
+      <a
+        href="estoque.html"
+        class="inline-flex items-center text-gray-500 hover:text-blue-600 transition mb-6 font-medium gap-2">
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2">
+
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
+
         Voltar para o Estoque
       </a>
 
-      <!-- Título da Página -->
       <div class="mb-8">
         <h2 class="text-3xl sm:text-4xl font-bold text-gray-800">
           Cadastro de Produto
         </h2>
+
         <p class="mt-2 text-gray-500">
           Preencha os detalhes abaixo para adicionar um novo item ao estoque.
         </p>
       </div>
 
-      <!-- ========================= -->
-      <!-- Card do Formulário -->
-      <!-- ========================= -->
+      <!-- FORMULÁRIO -->
       <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-10">
-        
-        <form action="#" method="POST">
-          
-          <!-- Grid do Formulário -->
+
+        <form id="formProduto">
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            <!-- Nome do Produto -->
+            <!-- NOME -->
             <div class="md:col-span-2">
-              <label for="nome_produto" class="block text-sm font-medium text-gray-700 mb-1">Nome do Produto</label>
-              <input 
-                type="text" 
-                id="nome_produto" 
-                name="nome_produto" 
+              <label
+                for="nome"
+                class="block text-sm font-medium text-gray-700 mb-1">
+                Nome do Produto
+              </label>
+
+              <input
+                type="text"
+                id="nome"
+                name="nome"
                 placeholder="Ex: Teclado Mecânico RGB"
+                maxlength="100"
                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-                required
-              >
+                required>
             </div>
 
-            <!-- Código / SKU -->
+            <!-- SKU -->
             <div>
-              <label for="codigo" class="block text-sm font-medium text-gray-700 mb-1">Código (SKU)</label>
-              <input 
-                type="text" 
-                id="codigo" 
-                name="codigo" 
+              <label
+                for="sku"
+                class="block text-sm font-medium text-gray-700 mb-1">
+                Código (SKU)
+              </label>
+
+              <input
+                type="text"
+                id="sku"
+                name="sku"
                 placeholder="Ex: TEC-001"
+                maxlength="50"
                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-                required
-              >
+                required>
             </div>
 
-            <!-- Código de Barras -->
+            <!-- CATEGORIA -->
             <div>
-              <label for="codigo_barras" class="block text-sm font-medium text-gray-700 mb-1">Código de Barras (EAN/GTIN)</label>
-              <input 
-                type="text" 
-                id="codigo_barras" 
-                name="codigo_barras" 
-                placeholder="Ex: 7891020304050"
+              <label
+                for="categoria"
+                class="block text-sm font-medium text-gray-700 mb-1">
+                Categoria
+              </label>
+
+              <input
+                type="text"
+                id="categoria"
+                name="categoria"
+                placeholder="Ex: Periféricos, Monitores, Hardware..."
+                maxlength="60"
                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-              >
+                required>
             </div>
 
-            <!-- Categoria -->
+            <!-- PREÇO DE CUSTO -->
             <div>
-              <label for="categoria" class="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
-              <select 
-                id="categoria" 
-                name="categoria" 
-                class="w-full border border-gray-300 rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-                required
-              >
-                <option value="" disabled selected>Selecione uma categoria...</option>
-                <option value="perifericos">Periféricos</option>
-                <option value="hardware">Hardware</option>
-                <option value="acessorios">Acessórios</option>
-                <option value="outros">Outros</option>
-              </select>
-            </div>
+              <label
+                for="precoCusto"
+                class="block text-sm font-medium text-gray-700 mb-1">
+                Preço de Custo (R$)
+              </label>
 
-            <!-- Unidade de Medida -->
-            <div>
-              <label for="unidade" class="block text-sm font-medium text-gray-700 mb-1">Unidade de Medida</label>
-              <select 
-                id="unidade" 
-                name="unidade" 
-                class="w-full border border-gray-300 rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-                required
-              >
-                <option value="un">Unidade (UN)</option>
-                <option value="kg">Quilograma (KG)</option>
-                <option value="cx">Caixa (CX)</option>
-                <option value="pc">Peça (PC)</option>
-              </select>
-            </div>
-
-            <!-- Preço de Custo -->
-            <div>
-              <label for="preco_custo" class="block text-sm font-medium text-gray-700 mb-1">Preço de Custo (R$)</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
+                id="precoCusto"
+                name="precoCusto"
+                min="0"
                 step="0.01"
-                id="preco_custo" 
-                name="preco_custo" 
-                placeholder="0,00"
+                placeholder="0.00"
                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-                required
-              >
+                required>
             </div>
 
-            <!-- Preço de Venda -->
+            <!-- PREÇO DE VENDA -->
             <div>
-              <label for="preco_venda" class="block text-sm font-medium text-gray-700 mb-1">Preço de Venda (R$)</label>
-              <input 
-                type="number" 
+              <label
+                for="precoVenda"
+                class="block text-sm font-medium text-gray-700 mb-1">
+                Preço de Venda (R$)
+              </label>
+
+              <input
+                type="number"
+                id="precoVenda"
+                name="precoVenda"
+                min="0"
                 step="0.01"
-                id="preco_venda" 
-                name="preco_venda" 
-                placeholder="0,00"
+                placeholder="0.00"
                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-                required
-              >
+                required>
             </div>
 
-            <!-- Quantidade em Estoque -->
+            <!-- QUANTIDADE -->
             <div>
-              <label for="estoque" class="block text-sm font-medium text-gray-700 mb-1">Quantidade Inicial</label>
-              <input 
-                type="number" 
-                id="estoque" 
-                name="estoque" 
+              <label
+                for="quantidade"
+                class="block text-sm font-medium text-gray-700 mb-1">
+                Quantidade Inicial
+              </label>
+
+              <input
+                type="number"
+                id="quantidade"
+                name="quantidade"
+                min="0"
+                step="1"
                 placeholder="Ex: 50"
                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-                required
-              >
+                required>
             </div>
 
-            <!-- Estoque Mínimo -->
+            <!-- ESTOQUE MÍNIMO -->
             <div>
-              <label for="estoque_minimo" class="block text-sm font-medium text-gray-700 mb-1">Estoque Mínimo (Alerta)</label>
-              <input 
-                type="number" 
-                id="estoque_minimo" 
-                name="estoque_minimo" 
+              <label
+                for="estoqueMinimo"
+                class="block text-sm font-medium text-gray-700 mb-1">
+                Estoque Mínimo (Alerta)
+              </label>
+
+              <input
+                type="number"
+                id="estoqueMinimo"
+                name="estoqueMinimo"
+                min="0"
+                step="1"
                 placeholder="Ex: 5"
                 class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-                required
-              >
-            </div>
-
-            <!-- Descrição do Produto -->
-            <div class="md:col-span-2">
-              <label for="descricao" class="block text-sm font-medium text-gray-700 mb-1">Descrição Detalhada</label>
-              <textarea 
-                id="descricao" 
-                name="descricao" 
-                rows="4" 
-                placeholder="Informações adicionais sobre o produto..."
-                class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition resize-none"
-              ></textarea>
+                required>
             </div>
 
           </div>
 
-          <!-- Linha divisória -->
+          <!-- MENSAGEM -->
+          <p
+            id="mensagem"
+            class="hidden mt-6 p-4 rounded-xl text-sm"
+            role="alert">
+          </p>
+
           <hr class="my-8 border-gray-200">
 
-          <!-- Botões de Ação -->
           <div class="flex flex-col md:flex-row items-center justify-end gap-4">
-            <button 
-              type="button" 
-              class="w-full md:w-auto px-6 py-3 rounded-xl text-gray-600 font-semibold hover:bg-gray-100 transition"
-            >
+
+            <a
+              href="estoque.html"
+              class="w-full md:w-auto text-center px-6 py-3 rounded-xl text-gray-600 font-semibold hover:bg-gray-100 transition">
               Cancelar
-            </button>
-            <button 
-              type="submit" 
-              class="w-full md:w-auto px-8 py-3 rounded-xl bg-blue-600 text-white font-semibold shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
-            >
+            </a>
+
+            <button
+              id="botaoSalvar"
+              type="submit"
+              class="w-full md:w-auto px-8 py-3 rounded-xl bg-blue-600 text-white font-semibold shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
               Salvar Produto
             </button>
+
           </div>
 
         </form>
-
       </div>
-
     </div>
   </main>
 
-  <!-- ========================= -->
-  <!-- Footer -->
-  <!-- ========================= -->
+  <!-- FOOTER -->
   <footer class="bg-white border-t border-gray-200 mt-auto">
     <div class="max-w-7xl mx-auto px-6 py-5 text-center text-sm text-gray-500">
-      © 2026 Painel — Todos os direitos reservados.
+      © 2026 StockHub — Todos os direitos reservados.
     </div>
   </footer>
 
-  <!-- Script Externo -->
-  <script src="js/header.js"></script>
+  <script>
+    // ==========================================
+    // AUTENTICAÇÃO E USUÁRIO
+    // ==========================================
+
+    const token = localStorage.getItem("token");
+    const usuarioSalvo = localStorage.getItem("usuario");
+
+    if (!token || !usuarioSalvo) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.replace("login.html");
+    }
+
+    let usuario = null;
+
+    try {
+      usuario = JSON.parse(usuarioSalvo);
+
+      if (!usuario || !usuario.nome) {
+        throw new Error("Dados do usuário inválidos.");
+      }
+
+      document.getElementById("nomeUsuario").textContent =
+        `Olá, ${usuario.nome}`;
+
+      document.getElementById("nomeUsuarioMobile").textContent =
+        `Olá, ${usuario.nome}`;
+
+    } catch (erro) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.replace("login.html");
+    }
+
+    // ==========================================
+    // SAIR DA CONTA
+    // ==========================================
+
+    function sairDaConta(event) {
+      event.preventDefault();
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+
+      window.location.replace("login.html");
+    }
+
+    document.getElementById("linkSair").addEventListener("click", sairDaConta);
+    document.getElementById("linkSairMobile").addEventListener("click", sairDaConta);
+
+    // ==========================================
+    // MENU MOBILE
+    // ==========================================
+
+    const menuButton = document.getElementById("menuButton");
+    const closeMenu = document.getElementById("closeMenu");
+    const sideMenu = document.getElementById("sideMenu");
+    const overlay = document.getElementById("overlay");
+
+    function abrirMenu() {
+      sideMenu.classList.remove("translate-x-full");
+      overlay.classList.remove("hidden");
+      menuButton.setAttribute("aria-expanded", "true");
+      document.body.classList.add("overflow-hidden");
+    }
+
+    function fecharMenu() {
+      sideMenu.classList.add("translate-x-full");
+      overlay.classList.add("hidden");
+      menuButton.setAttribute("aria-expanded", "false");
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    menuButton.addEventListener("click", abrirMenu);
+    closeMenu.addEventListener("click", fecharMenu);
+    overlay.addEventListener("click", fecharMenu);
+
+    // ==========================================
+    // CADASTRO DE PRODUTO
+    // ==========================================
+
+    const formProduto = document.getElementById("formProduto");
+    const mensagem = document.getElementById("mensagem");
+    const botaoSalvar = document.getElementById("botaoSalvar");
+
+    // NORMALIZAR TEXTO
+    function normalizarTexto(texto) {
+      return String(texto ?? "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, " ");
+    }
+
+    // MOSTRAR MENSAGEM
+    function mostrarMensagem(texto, sucesso) {
+      mensagem.textContent = texto;
+
+      mensagem.className = sucesso
+        ? "mt-6 p-4 rounded-xl text-sm bg-green-50 text-green-700 border border-green-200"
+        : "mt-6 p-4 rounded-xl text-sm bg-red-50 text-red-700 border border-red-200";
+    }
+
+    // VERIFICAR PRODUTOS DUPLICADOS
+    async function verificarProdutoDuplicado(produto, token) {
+      const resposta = await fetch("http://localhost:8081/produtos", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (!resposta.ok) {
+        throw new Error("Não foi possível verificar os produtos cadastrados.");
+      }
+
+      const produtosCadastrados = await resposta.json();
+
+      const nomeDuplicado = produtosCadastrados.some(item =>
+        normalizarTexto(item.nome) === normalizarTexto(produto.nome)
+      );
+
+      const skuDuplicado = produtosCadastrados.some(item =>
+        normalizarTexto(item.sku) === normalizarTexto(produto.sku)
+      );
+
+      if (nomeDuplicado && skuDuplicado) {
+        throw new Error("Já existe um produto cadastrado com esse nome e SKU.");
+      }
+
+      if (nomeDuplicado) {
+        throw new Error("Já existe um produto cadastrado com esse nome.");
+      }
+
+      if (skuDuplicado) {
+        throw new Error("Esse SKU já está sendo utilizado por outro produto.");
+      }
+    }
+
+    // CADASTRAR PRODUTO
+    formProduto.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const tokenAtual = localStorage.getItem("token");
+
+      if (!tokenAtual) {
+        mostrarMensagem("Sua sessão não foi encontrada. Faça login novamente.", false);
+        return;
+      }
+
+      const produto = {
+        sku: document.getElementById("sku").value.trim(),
+        nome: document.getElementById("nome").value.trim(),
+        categoria: document.getElementById("categoria").value.trim(),
+        precoCusto: Number(document.getElementById("precoCusto").value),
+        precoVenda: Number(document.getElementById("precoVenda").value),
+        quantidade: Number(document.getElementById("quantidade").value),
+        estoqueMinimo: Number(document.getElementById("estoqueMinimo").value)
+      };
+
+      if (!produto.nome || !produto.sku || !produto.categoria) {
+        mostrarMensagem("Preencha todos os campos obrigatórios.", false);
+        return;
+      }
+
+      if (
+        !Number.isFinite(produto.precoCusto) ||
+        !Number.isFinite(produto.precoVenda) ||
+        !Number.isInteger(produto.quantidade) ||
+        !Number.isInteger(produto.estoqueMinimo) ||
+        produto.precoCusto < 0 ||
+        produto.precoVenda < 0 ||
+        produto.quantidade < 0 ||
+        produto.estoqueMinimo < 0
+      ) {
+        mostrarMensagem(
+          "Verifique os valores informados. Preços e quantidades não podem ser negativos.",
+          false
+        );
+        return;
+      }
+
+      botaoSalvar.disabled = true;
+      botaoSalvar.textContent = "Verificando...";
+      botaoSalvar.classList.add("opacity-60", "cursor-not-allowed");
+
+      try {
+        // VERIFICAR DUPLICIDADES ANTES DO CADASTRO
+        await verificarProdutoDuplicado(produto, tokenAtual);
+
+        botaoSalvar.textContent = "Salvando...";
+
+        const resposta = await fetch("http://localhost:8081/produtos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${tokenAtual}`
+          },
+          body: JSON.stringify(produto)
+        });
+
+        const textoResposta = await resposta.text();
+
+        let dados = textoResposta;
+
+        try {
+          dados = JSON.parse(textoResposta);
+        } catch {
+          // A resposta também pode ser texto simples.
+        }
+
+        if (!resposta.ok) {
+          const erro = typeof dados === "string"
+            ? dados
+            : dados.detail || dados.message || dados.error || "Não foi possível cadastrar o produto.";
+
+          throw new Error(erro);
+        }
+
+        mostrarMensagem("Produto cadastrado com sucesso!", true);
+        formProduto.reset();
+
+      } catch (erro) {
+        mostrarMensagem(
+          erro.message || "Erro ao conectar com o servidor.",
+          false
+        );
+
+      } finally {
+        botaoSalvar.disabled = false;
+        botaoSalvar.textContent = "Salvar Produto";
+        botaoSalvar.classList.remove("opacity-60", "cursor-not-allowed");
+      }
+    });
+  </script>
 
 </body>
 </html>

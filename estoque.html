@@ -1,323 +1,1661 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Estoque - Painel</title>
+  <title>Estoque - StockHub</title>
 
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
     body {
       min-height: 100vh;
     }
+
+    .modal-entrada {
+      animation: aparecer .2s ease-out;
+    }
+
+    @keyframes aparecer {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
   </style>
 </head>
 
 <body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
 
-  <!-- ========================= -->
-  <!-- Header -->
-  <!-- ========================= -->
-
+  <!-- HEADER -->
   <header class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      
-      <!-- Logo -->
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold">
-          P
-        </div>
-        <h1 class="text-xl font-bold text-gray-800">
-          Painel
-        </h1>
-      </div>
 
-      <!-- Menu Desktop -->
-      <div class="hidden md:flex items-center gap-6">
-        <a href="estoque.html" class="text-blue-600 font-medium transition">
+      <!-- LOGO -->
+      <h1 class="text-xl font-bold text-black flex items-center gap-1 shrink-0">
+        Stock
+        <span class="bg-blue-600 text-white px-2 py-1 rounded-lg">
+          Hub
+        </span>
+      </h1>
+
+      <!-- INFORMAÇÕES E MENU -->
+      <div class="flex items-center gap-3 md:gap-6">
+
+        <!-- NOME DA PÁGINA -->
+        <span class="text-sm text-gray-500 hidden sm:block">
           Estoque
-        </a>
-        <a href="cadastro-usuario.html" class="text-gray-500 hover:text-blue-600 transition">
-          Cadastro de usuários
-        </a>
-        <a href="login.html" class="text-gray-500 hover:text-red-600 transition">
+        </span>
+
+        <!-- USUÁRIO -->
+        <span
+          id="nomeUsuario"
+          class="text-sm text-gray-600 font-medium truncate max-w-[110px] sm:max-w-none">
+        </span>
+
+        <!-- SAIR DESKTOP -->
+        <a
+          href="login.html"
+          id="linkSair"
+          class="hidden md:block text-gray-500 hover:text-red-600 transition">
           Sair
         </a>
+
+        <!-- MENU MOBILE -->
+        <button
+          id="menuButton"
+          type="button"
+          aria-label="Abrir menu"
+          aria-expanded="false"
+          class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg text-gray-700 hover:bg-gray-200 transition">
+
+          <svg
+            id="menuIcon"
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-7 h-7"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2">
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
       </div>
-
-      <!-- Burger Button -->
-      <button
-        id="menuButton"
-        type="button"
-        aria-label="Abrir menu"
-        aria-expanded="false"
-        class="md:hidden w-10 h-10 flex items-center justify-center rounded-lg text-gray-700 hover:bg-gray-200 transition"
-      >
-        <svg id="menuIcon" xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-      </button>
-
     </div>
   </header>
 
-  <!-- ========================= -->
-  <!-- Overlay -->
-  <!-- ========================= -->
-  <div id="overlay" class="fixed inset-0 bg-black/40 z-40 hidden md:hidden"></div>
+  <!-- OVERLAY MOBILE -->
+  <div
+    id="overlay"
+    class="fixed inset-0 bg-black/40 z-40 hidden md:hidden">
+  </div>
 
-  <!-- ========================= -->
-  <!-- Menu Lateral Mobile -->
-  <!-- ========================= -->
+  <!-- MENU MOBILE -->
   <aside
     id="sideMenu"
-    class="fixed top-0 right-0 h-full w-72 bg-white z-50 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out md:hidden"
-  >
+    class="fixed top-0 right-0 h-full w-72 bg-white z-50 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out md:hidden">
+
     <div class="h-16 px-6 border-b border-gray-200 flex items-center justify-between">
-      <h2 class="text-lg font-bold text-gray-800">Menu</h2>
-      <button id="closeMenu" type="button" aria-label="Fechar menu" class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-200 transition">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+
+      <h2 class="text-lg font-bold text-gray-800">
+        Menu
+      </h2>
+
+      <button
+        id="closeMenu"
+        type="button"
+        aria-label="Fechar menu"
+        class="w-10 h-10 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-200 transition">
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2">
+
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
+
     </div>
+
     <nav class="p-6 flex flex-col gap-2">
-      <a href="estoque.html" class="px-4 py-3 rounded-lg bg-blue-50 text-blue-600 transition font-medium">
-        Estoque
-      </a>
-      <a href="cadastro-usuario.html" class="px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition font-medium">
-        Cadastro de usuários
-      </a>
-      <a href="login.html" class="px-4 py-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition font-medium">
+
+      <!-- USUÁRIO MOBILE -->
+      <span
+        id="nomeUsuarioMobile"
+        class="px-4 py-3 text-gray-500 font-medium border-b border-gray-100 mb-2">
+      </span>
+
+      <!-- SAIR MOBILE -->
+      <a
+        href="login.html"
+        id="linkSairMobile"
+        class="px-4 py-3 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 transition font-medium">
         Sair
       </a>
+
     </nav>
   </aside>
 
-  <!-- ========================= -->
-  <!-- Conteúdo Principal -->
-  <!-- ========================= -->
-
+  <!-- CONTEÚDO PRINCIPAL -->
   <main class="flex-1 pt-24 pb-12 px-6">
     <div class="max-w-7xl mx-auto">
 
-      <!-- Botão Voltar -->
-      <a href="usuario.html" class="inline-flex items-center text-gray-500 hover:text-blue-600 transition mb-6 font-medium gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      <a
+        href="usuario.html"
+        class="inline-flex items-center text-gray-500 hover:text-blue-600 transition mb-6 font-medium gap-2">
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2">
+
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
+
         Voltar para o Painel
       </a>
 
-      <!-- Cabeçalho da Página (Título + Botão Cadastrar) -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+
         <div>
           <h2 class="text-3xl sm:text-4xl font-bold text-gray-800">
             Controle de Estoque
           </h2>
+
           <p class="mt-2 text-gray-500">
-            Gerencie seus produtos, visualize quantidades e faça alterações.
+            Gerencie seus produtos e acompanhe as quantidades disponíveis.
           </p>
         </div>
-        
-        <!-- Botão Cadastrar Produto -->
-        <a href="cadastro-produto.html" class="inline-flex items-center justify-center gap-2 bg-blue-600 text-white rounded-xl px-6 py-3 font-semibold shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+
+        <a
+          id="botaoCadastrar"
+          href="cadastro-produto.html"
+          class="inline-flex items-center justify-center gap-2 bg-blue-600 text-white rounded-xl px-6 py-3 font-semibold shadow-md hover:bg-blue-700 transition">
+
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2.5">
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 4v16m8-8H4" />
           </svg>
+
           Cadastrar Produto
         </a>
+
       </div>
 
-      <!-- ========================= -->
-      <!-- Tabela de Produtos -->
-      <!-- ========================= -->
-      <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        
-        <!-- Barra de Pesquisa e Filtros -->
-        <div class="p-6 border-b border-gray-200 bg-white flex flex-col lg:flex-row gap-4 items-center justify-between">
-          
-          <!-- Agrupamento Select (Critério) + Input (Termo) -->
-          <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+      <!-- INDICADORES -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
 
-            <!-- Campo de digitação -->
-            <div class="relative w-full sm:w-72">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <input 
-                type="text" 
-                placeholder="Digite o termo..." 
-                class="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-              >
-            </div>
-            <!-- Select de Opções de Busca -->
-            <select class="w-full sm:w-auto border border-gray-300 rounded-xl px-4 py-2.5 bg-gray-50 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition cursor-pointer font-medium">
-              <option value="nome">Buscar por Nome</option>
-              <option value="codigo">Buscar por Código</option>
-              <option value="codigo_barras">Buscar por Cód. de Barras</option>
-            </select>
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <p class="text-sm text-gray-500">
+            Total de produtos cadastrados
+          </p>
 
-          </div>
-          
-          <!-- Botão de Filtro Adicional (Categorias, Status, etc) -->
-          <button class="w-full lg:w-auto px-4 py-2.5 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition flex items-center justify-center gap-2 font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-            Filtros
-          </button>
-
+          <p id="totalProdutos" class="text-3xl font-bold text-gray-800 mt-2">
+            0
+          </p>
         </div>
 
-        <!-- Tabela Responsiva -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <p class="text-sm text-gray-500">
+            Produtos com estoque baixo
+          </p>
+
+          <p id="totalEstoqueBaixo" class="text-3xl font-bold text-red-600 mt-2">
+            0
+          </p>
+        </div>
+
+      </div>
+
+      <!-- TABELA -->
+      <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+
+        <!-- ÁREA DE FILTROS -->
+        <div class="p-6 border-b border-gray-200">
+
+          <div class="flex flex-col lg:flex-row gap-4 lg:items-center justify-between mb-5">
+
+            <div>
+              <h3 class="text-lg font-bold text-gray-800">
+                Produtos cadastrados
+              </h3>
+
+              <p class="text-sm text-gray-500 mt-1">
+                Pesquise, filtre e organize seus produtos.
+              </p>
+            </div>
+
+            <button
+              id="limparFiltros"
+              type="button"
+              class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-300 text-gray-600 font-medium hover:bg-gray-50 hover:text-blue-600 transition">
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2">
+
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M4 4v5h5M20 20v-5h-5M5 9a7 7 0 0112-3l3 3M19 15a7 7 0 01-12 3l-3-3" />
+              </svg>
+
+              Limpar filtros
+            </button>
+
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+            <!-- BUSCA -->
+            <div class="sm:col-span-2 lg:col-span-1">
+
+              <label
+                for="campoBusca"
+                class="block text-sm font-medium text-gray-700 mb-2">
+                Pesquisar produto
+              </label>
+
+              <div class="relative">
+
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg
+                    class="h-5 w-5 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2">
+
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+
+                <input
+                  id="campoBusca"
+                  type="text"
+                  placeholder="Nome, SKU ou categoria..."
+                  class="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition">
+              </div>
+            </div>
+
+            <!-- CATEGORIA -->
+            <div>
+
+              <label
+                for="filtroCategoria"
+                class="block text-sm font-medium text-gray-700 mb-2">
+                Categoria
+              </label>
+
+              <select
+                id="filtroCategoria"
+                class="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition cursor-pointer">
+
+                <option value="todas">
+                  Todas as categorias
+                </option>
+              </select>
+            </div>
+
+            <!-- ESTOQUE -->
+            <div>
+
+              <label
+                for="filtroEstoque"
+                class="block text-sm font-medium text-gray-700 mb-2">
+                Situação do estoque
+              </label>
+
+              <select
+                id="filtroEstoque"
+                class="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition cursor-pointer">
+
+                <option value="todos">Todos os produtos</option>
+                <option value="baixo">Estoque baixo</option>
+                <option value="normal">Estoque normal</option>
+              </select>
+            </div>
+
+            <!-- ORDENAÇÃO -->
+            <div>
+
+              <label
+                for="ordenacao"
+                class="block text-sm font-medium text-gray-700 mb-2">
+                Ordenar por
+              </label>
+
+              <select
+                id="ordenacao"
+                class="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition cursor-pointer">
+
+                <option value="padrao">Padrão</option>
+                <option value="nomeAsc">Nome (A–Z)</option>
+                <option value="nomeDesc">Nome (Z–A)</option>
+                <option value="precoAsc">Menor preço de venda</option>
+                <option value="precoDesc">Maior preço de venda</option>
+                <option value="quantidadeAsc">Menor quantidade</option>
+                <option value="quantidadeDesc">Maior quantidade</option>
+              </select>
+            </div>
+
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 mt-5">
+
+            <span class="text-xs font-medium text-gray-500">
+              Filtros ativos:
+            </span>
+
+            <span
+              id="indicadorFiltros"
+              class="text-xs text-gray-500 bg-gray-100 px-3 py-1.5 rounded-full">
+              Nenhum filtro aplicado
+            </span>
+
+          </div>
+        </div>
+
+        <div
+          id="mensagem"
+          class="hidden mx-6 mt-6 p-4 rounded-xl text-sm"
+          role="alert">
+        </div>
+
+        <!-- TABELA DE PRODUTOS -->
         <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse min-w-[950px]">
+
+          <table class="w-full text-left border-collapse min-w-[1050px]">
+
             <thead>
               <tr class="bg-gray-50 border-b border-gray-200 text-sm text-gray-500 uppercase tracking-wider">
-                <th class="py-4 px-6 font-medium">Código</th>
-                <th class="py-4 px-6 font-medium">Cód. de Barras</th>
+
+                <th class="py-4 px-6 font-medium">SKU</th>
                 <th class="py-4 px-6 font-medium">Produto</th>
+                <th class="py-4 px-6 font-medium text-right">Preço de Custo</th>
+                <th class="py-4 px-6 font-medium text-right">Preço de Venda</th>
                 <th class="py-4 px-6 font-medium text-center">Estoque</th>
-                <th class="py-4 px-6 font-medium text-right">Preço (Venda)</th>
-                <th class="py-4 px-6 font-medium text-center">Ações</th>
+                <th class="py-4 px-6 font-medium text-center">Status</th>
+
+                <th
+                  id="cabecalhoAcoes"
+                  class="py-4 px-6 font-medium text-center hidden">
+                  Ações
+                </th>
+
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 text-gray-700">
-              
-              <!-- Item 1 (Estoque Normal) -->
-              <tr class="hover:bg-gray-50 transition group">
-                <td class="py-4 px-6 font-medium text-gray-500">TEC-001</td>
-                <td class="py-4 px-6 text-gray-500 text-sm">7891020304050</td>
-                <td class="py-4 px-6 font-semibold text-gray-800">
-                  Teclado Mecânico RGB
-                  <div class="text-sm font-normal text-gray-400 mt-0.5">Periféricos</div>
-                </td>
-                <td class="py-4 px-6 text-center">
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
-                    45 un
-                  </span>
-                </td>
-                <td class="py-4 px-6 text-right font-medium">R$ 350,00</td>
-                <td class="py-4 px-6">
-                  <div class="flex items-center justify-center gap-3">
-                    <button class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition font-medium text-sm flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                      Alterar
-                    </button>
-                    <button class="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg transition" title="Excluir">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
 
-              <!-- Item 2 (Estoque Baixo) -->
-              <tr class="hover:bg-gray-50 transition group">
-                <td class="py-4 px-6 font-medium text-gray-500">MOU-023</td>
-                <td class="py-4 px-6 text-gray-500 text-sm">7891020304051</td>
-                <td class="py-4 px-6 font-semibold text-gray-800">
-                  Mouse Sem Fio Logitech
-                  <div class="text-sm font-normal text-gray-400 mt-0.5">Periféricos</div>
-                </td>
-                <td class="py-4 px-6 text-center">
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium bg-red-100 text-red-700">
-                    5 un
-                  </span>
-                </td>
-                <td class="py-4 px-6 text-right font-medium">R$ 120,00</td>
-                <td class="py-4 px-6">
-                  <div class="flex items-center justify-center gap-3">
-                    <button class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition font-medium text-sm flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                      Alterar
-                    </button>
-                    <button class="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg transition" title="Excluir">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
+            <tbody
+              id="tabelaProdutos"
+              class="divide-y divide-gray-100 text-gray-700">
 
-              <!-- Item 3 -->
-              <tr class="hover:bg-gray-50 transition group">
-                <td class="py-4 px-6 font-medium text-gray-500">MON-105</td>
-                <td class="py-4 px-6 text-gray-500 text-sm">7891020304052</td>
-                <td class="py-4 px-6 font-semibold text-gray-800">
-                  Monitor UltraWide 29"
-                  <div class="text-sm font-normal text-gray-400 mt-0.5">Hardware</div>
-                </td>
-                <td class="py-4 px-6 text-center">
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
-                    12 un
-                  </span>
-                </td>
-                <td class="py-4 px-6 text-right font-medium">R$ 1.250,00</td>
-                <td class="py-4 px-6">
-                  <div class="flex items-center justify-center gap-3">
-                    <button class="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition font-medium text-sm flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                      Alterar
-                    </button>
-                    <button class="text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg transition" title="Excluir">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
+              <tr>
+                <td colspan="7" class="py-10 text-center text-gray-500">
+                  Carregando produtos...
                 </td>
               </tr>
 
             </tbody>
+
           </table>
         </div>
-        
-        <!-- Paginação -->
-        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-          <span class="text-sm text-gray-500">
-            Mostrando <span class="font-medium text-gray-700">1</span> a <span class="font-medium text-gray-700">3</span> de <span class="font-medium text-gray-700">24</span> resultados
+
+        <div class="bg-gray-50 px-6 py-4 border-t border-gray-200">
+          <span id="contadorResultados" class="text-sm text-gray-500">
+            Carregando resultados...
           </span>
-          
-          <div class="flex items-center gap-1">
-            <button class="px-3 py-1 rounded-lg border border-gray-300 bg-white text-gray-500 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-              Anterior
-            </button>
-            <button class="px-3 py-1 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition">
-              Próxima
-            </button>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- POPUP DE EDIÇÃO -->
+  <div
+    id="modalEdicao"
+    class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/50 p-4">
+
+    <div class="modal-entrada bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+
+      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-200">
+
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">
+            Editar produto
+          </h2>
+
+          <p class="text-sm text-gray-500 mt-1">
+            Atualize as informações do produto.
+          </p>
+        </div>
+
+        <button
+          id="fecharModal"
+          type="button"
+          aria-label="Fechar edição"
+          class="w-9 h-9 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition text-2xl">
+          &times;
+        </button>
+
+      </div>
+
+      <form id="formEdicao" class="p-6">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+          <div>
+            <label
+              for="editarNome"
+              class="block text-sm font-medium text-gray-700 mb-2">
+              Nome do produto
+            </label>
+
+            <input
+              id="editarNome"
+              type="text"
+              required
+              maxlength="100"
+              class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
           </div>
+
+          <div>
+            <label
+              for="editarSku"
+              class="block text-sm font-medium text-gray-700 mb-2">
+              SKU
+            </label>
+
+            <input
+              id="editarSku"
+              type="text"
+              required
+              maxlength="50"
+              class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+
+          <div>
+            <label
+              for="editarCategoria"
+              class="block text-sm font-medium text-gray-700 mb-2">
+              Categoria
+            </label>
+
+            <input
+              id="editarCategoria"
+              type="text"
+              required
+              maxlength="60"
+              class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+
+          <div>
+            <label
+              for="editarPrecoCusto"
+              class="block text-sm font-medium text-gray-700 mb-2">
+              Preço de custo (R$)
+            </label>
+
+            <input
+              id="editarPrecoCusto"
+              type="number"
+              required
+              min="0"
+              step="0.01"
+              class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+
+          <div>
+            <label
+              for="editarPrecoVenda"
+              class="block text-sm font-medium text-gray-700 mb-2">
+              Preço de venda (R$)
+            </label>
+
+            <input
+              id="editarPrecoVenda"
+              type="number"
+              required
+              min="0"
+              step="0.01"
+              class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+
+          <div>
+            <label
+              for="editarQuantidade"
+              class="block text-sm font-medium text-gray-700 mb-2">
+              Quantidade em estoque
+            </label>
+
+            <input
+              id="editarQuantidade"
+              type="number"
+              required
+              min="0"
+              step="1"
+              class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+
+          <div class="sm:col-span-2">
+            <label
+              for="editarEstoqueMinimo"
+              class="block text-sm font-medium text-gray-700 mb-2">
+              Estoque mínimo
+            </label>
+
+            <input
+              id="editarEstoqueMinimo"
+              type="number"
+              required
+              min="0"
+              step="1"
+              class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+
+        </div>
+
+        <div
+          id="erroEdicao"
+          class="hidden mt-5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+        </div>
+
+        <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 mt-7 pt-5 border-t border-gray-200">
+
+          <button
+            id="cancelarEdicao"
+            type="button"
+            class="px-5 py-3 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition">
+            Cancelar
+          </button>
+
+          <button
+            id="botaoSalvarEdicao"
+            type="submit"
+            class="px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
+            Salvar alterações
+          </button>
+
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- POPUP DE CONFIRMAÇÃO DE EXCLUSÃO -->
+  <div
+    id="modalExclusao"
+    class="fixed inset-0 z-[110] hidden items-center justify-center bg-black/50 p-4">
+
+    <div class="modal-entrada bg-white w-full max-w-md rounded-2xl shadow-2xl p-6">
+
+      <div class="flex items-center gap-4 mb-5">
+
+        <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
+
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2">
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v4m0 4h.01M10.29 3.86l-8.1 14.02A2 2 0 003.92 21h16.16a2 2 0 001.73-3.12l-8.1-14.02a2 2 0 00-3.46 0z" />
+          </svg>
+
+        </div>
+
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">
+            Excluir produto?
+          </h2>
+
+          <p class="text-sm text-gray-500">
+            Confirme esta ação antes de continuar.
+          </p>
         </div>
 
       </div>
 
-    </div>
-  </main>
+      <p class="text-gray-600 mb-6">
+        Tem certeza de que deseja excluir
+        <strong id="nomeProdutoExclusao" class="text-gray-800"></strong>?
+        Essa ação não poderá ser desfeita.
+      </p>
 
-  <!-- ========================= -->
-  <!-- Footer -->
-  <!-- ========================= -->
+      <div
+        id="erroExclusao"
+        class="hidden mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+      </div>
+
+      <div class="flex flex-col-reverse sm:flex-row justify-end gap-3">
+
+        <button
+          id="cancelarExclusao"
+          type="button"
+          class="px-5 py-3 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition">
+          Cancelar
+        </button>
+
+        <button
+          id="confirmarExclusao"
+          type="button"
+          class="px-5 py-3 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition">
+          Sim, excluir
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- POPUP DE ALERTA DE ESTOQUE BAIXO -->
+  <div
+    id="modalEstoqueBaixo"
+    class="fixed inset-0 z-[120] hidden items-center justify-center bg-black/50 p-4">
+
+    <div class="modal-entrada bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+
+      <div class="flex items-center gap-4 p-6 border-b border-gray-200">
+
+        <div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center">
+
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-7 h-7"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2">
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v4m0 4h.01M10.29 3.86l-8.1 14.02A2 2 0 003.92 21h16.16a2 2 0 001.73-3.12l-8.1-14.02a2 2 0 00-3.46 0z" />
+          </svg>
+
+        </div>
+
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">
+            Atenção: estoque baixo!
+          </h2>
+
+          <p class="text-sm text-gray-500 mt-1">
+            Alguns produtos precisam de reposição.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="p-6">
+
+        <p class="text-sm text-gray-600 mb-4">
+          Os seguintes produtos estão com estoque no mínimo ou abaixo dele:
+        </p>
+
+        <div
+          id="listaProdutosEstoqueBaixo"
+          class="space-y-3 max-h-64 overflow-y-auto">
+        </div>
+
+        <button
+          id="fecharAlertaEstoque"
+          type="button"
+          class="w-full mt-6 px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
+          Entendi
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- RODAPÉ -->
   <footer class="bg-white border-t border-gray-200 mt-auto">
     <div class="max-w-7xl mx-auto px-6 py-5 text-center text-sm text-gray-500">
-      © 2026 Painel — Todos os direitos reservados.
+      © 2026 StockHub — Todos os direitos reservados.
     </div>
   </footer>
 
-  <!-- Script Externo -->
-  <script src="js/header.js"></script>
+  <script>
+    // ==========================================
+    // AUTENTICAÇÃO E USUÁRIO
+    // ==========================================
+
+    const token = localStorage.getItem("token");
+    const usuarioSalvo = localStorage.getItem("usuario");
+
+    let usuario = null;
+
+    try {
+      usuario = JSON.parse(usuarioSalvo);
+    } catch {
+      usuario = null;
+    }
+
+    if (!token || !usuario || !usuario.nome) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      window.location.replace("login.html");
+    }
+
+    // ==========================================
+    // EXIBIR NOME DO USUÁRIO
+    // ==========================================
+
+    if (usuario && usuario.nome) {
+      document.getElementById("nomeUsuario").textContent =
+        `Olá, ${usuario.nome}`;
+
+      document.getElementById("nomeUsuarioMobile").textContent =
+        `Olá, ${usuario.nome}`;
+    }
+
+    // ==========================================
+    // PERMISSÕES
+    // ==========================================
+
+    const ehAdministrador = usuario?.funcao === "ADMINISTRADOR";
+
+    if (!ehAdministrador) {
+      document.getElementById("botaoCadastrar").classList.add("hidden");
+    } else {
+      document.getElementById("cabecalhoAcoes").classList.remove("hidden");
+    }
+
+    // ==========================================
+    // SAIR DA CONTA
+    // ==========================================
+
+    function sairDaConta(event) {
+      event.preventDefault();
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+
+      window.location.replace("login.html");
+    }
+
+    document.getElementById("linkSair").addEventListener("click", sairDaConta);
+    document.getElementById("linkSairMobile").addEventListener("click", sairDaConta);
+
+    // ==========================================
+    // MENU MOBILE
+    // ==========================================
+
+    const menuButton = document.getElementById("menuButton");
+    const closeMenu = document.getElementById("closeMenu");
+    const sideMenu = document.getElementById("sideMenu");
+    const overlay = document.getElementById("overlay");
+
+    function abrirMenu() {
+      sideMenu.classList.remove("translate-x-full");
+      overlay.classList.remove("hidden");
+
+      menuButton.setAttribute("aria-expanded", "true");
+
+      document.body.classList.add("overflow-hidden");
+    }
+
+    function fecharMenu() {
+      sideMenu.classList.add("translate-x-full");
+      overlay.classList.add("hidden");
+
+      menuButton.setAttribute("aria-expanded", "false");
+
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    menuButton.addEventListener("click", abrirMenu);
+    closeMenu.addEventListener("click", fecharMenu);
+    overlay.addEventListener("click", fecharMenu);
+
+    // ==========================================
+    // ELEMENTOS E VARIÁVEIS
+    // ==========================================
+
+    let produtos = [];
+    let produtoEmEdicao = null;
+    let produtoParaExcluir = null;
+
+    const tabelaProdutos = document.getElementById("tabelaProdutos");
+    const campoBusca = document.getElementById("campoBusca");
+    const filtroEstoque = document.getElementById("filtroEstoque");
+    const filtroCategoria = document.getElementById("filtroCategoria");
+    const ordenacao = document.getElementById("ordenacao");
+    const indicadorFiltros = document.getElementById("indicadorFiltros");
+    const mensagem = document.getElementById("mensagem");
+
+    const modalEdicao = document.getElementById("modalEdicao");
+    const formEdicao = document.getElementById("formEdicao");
+    const erroEdicao = document.getElementById("erroEdicao");
+    const botaoSalvarEdicao = document.getElementById("botaoSalvarEdicao");
+
+    const modalExclusao = document.getElementById("modalExclusao");
+    const botaoConfirmarExclusao = document.getElementById("confirmarExclusao");
+    const erroExclusao = document.getElementById("erroExclusao");
+
+    const modalEstoqueBaixo = document.getElementById("modalEstoqueBaixo");
+    const listaProdutosEstoqueBaixo = document.getElementById("listaProdutosEstoqueBaixo");
+    const fecharAlertaEstoque = document.getElementById("fecharAlertaEstoque");
+
+    // ==========================================
+    // NORMALIZAR TEXTO
+    // ==========================================
+
+    function normalizarTexto(texto) {
+      return String(texto ?? "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, " ");
+    }
+
+    // ==========================================
+    // FORMATAÇÃO
+    // ==========================================
+
+    function formatarMoeda(valor) {
+      return Number(valor).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+    }
+
+    function mostrarMensagem(texto, sucesso) {
+      mensagem.textContent = texto;
+
+      mensagem.className = sucesso
+        ? "mx-6 mt-6 p-4 rounded-xl text-sm bg-green-50 text-green-700 border border-green-200"
+        : "mx-6 mt-6 p-4 rounded-xl text-sm bg-red-50 text-red-700 border border-red-200";
+    }
+
+    function criarCelula(texto, classes = "") {
+      const td = document.createElement("td");
+      td.className = classes;
+      td.textContent = texto;
+
+      return td;
+    }
+
+    function estoqueBaixo(produto) {
+      return Number(produto.quantidade) <= Number(produto.estoqueMinimo);
+    }
+
+    // ==========================================
+    // ALERTA DE ESTOQUE BAIXO
+    // ==========================================
+
+    function verificarEstoqueBaixo() {
+      const produtosComEstoqueBaixo = produtos.filter(estoqueBaixo);
+
+      if (produtosComEstoqueBaixo.length === 0) {
+        return;
+      }
+
+      listaProdutosEstoqueBaixo.innerHTML = "";
+
+      produtosComEstoqueBaixo.forEach(produto => {
+        const item = document.createElement("div");
+
+        item.className =
+          "flex items-center justify-between gap-4 p-4 rounded-xl bg-red-50 border border-red-200";
+
+        const informacoes = document.createElement("div");
+
+        const nome = document.createElement("p");
+        nome.className = "font-semibold text-gray-800";
+        nome.textContent = produto.nome;
+
+        const sku = document.createElement("p");
+        sku.className = "text-xs text-gray-500 mt-1";
+        sku.textContent = `SKU: ${produto.sku}`;
+
+        informacoes.appendChild(nome);
+        informacoes.appendChild(sku);
+
+        const quantidade = document.createElement("div");
+        quantidade.className = "text-right flex-shrink-0";
+
+        const atual = document.createElement("p");
+        atual.className = "font-bold text-red-600";
+        atual.textContent = `${produto.quantidade} un`;
+
+        const minimo = document.createElement("p");
+        minimo.className = "text-xs text-gray-500";
+        minimo.textContent = `Mínimo: ${produto.estoqueMinimo}`;
+
+        quantidade.appendChild(atual);
+        quantidade.appendChild(minimo);
+
+        item.appendChild(informacoes);
+        item.appendChild(quantidade);
+
+        listaProdutosEstoqueBaixo.appendChild(item);
+      });
+
+      modalEstoqueBaixo.classList.remove("hidden");
+      modalEstoqueBaixo.classList.add("flex");
+
+      document.body.classList.add("overflow-hidden");
+    }
+
+    function fecharModalEstoqueBaixo() {
+      modalEstoqueBaixo.classList.add("hidden");
+      modalEstoqueBaixo.classList.remove("flex");
+
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    fecharAlertaEstoque.addEventListener("click", fecharModalEstoqueBaixo);
+
+    modalEstoqueBaixo.addEventListener("click", function(event) {
+      if (event.target === modalEstoqueBaixo) {
+        fecharModalEstoqueBaixo();
+      }
+    });
+
+    // ==========================================
+    // ATUALIZAR CATEGORIAS AUTOMATICAMENTE
+    // ==========================================
+
+    function atualizarCategorias() {
+      const categoriaSelecionada = filtroCategoria.value;
+
+      const categorias = [
+        ...new Set(
+          produtos
+            .map(produto => String(produto.categoria ?? "").trim())
+            .filter(categoria => categoria !== "")
+        )
+      ].sort((a, b) => a.localeCompare(b, "pt-BR"));
+
+      filtroCategoria.innerHTML = "";
+
+      const opcaoTodas = document.createElement("option");
+      opcaoTodas.value = "todas";
+      opcaoTodas.textContent = "Todas as categorias";
+
+      filtroCategoria.appendChild(opcaoTodas);
+
+      categorias.forEach(categoria => {
+        const opcao = document.createElement("option");
+
+        opcao.value = categoria;
+        opcao.textContent = categoria;
+
+        filtroCategoria.appendChild(opcao);
+      });
+
+      if (categorias.includes(categoriaSelecionada)) {
+        filtroCategoria.value = categoriaSelecionada;
+      } else {
+        filtroCategoria.value = "todas";
+      }
+    }
+
+    // ==========================================
+    // INDICADOR DOS FILTROS
+    // ==========================================
+
+    function atualizarIndicadorFiltros() {
+      const filtrosAtivos = [];
+
+      if (campoBusca.value.trim()) {
+        filtrosAtivos.push("Pesquisa");
+      }
+
+      if (filtroCategoria.value !== "todas") {
+        filtrosAtivos.push("Categoria");
+      }
+
+      if (filtroEstoque.value !== "todos") {
+        filtrosAtivos.push("Estoque");
+      }
+
+      if (ordenacao.value !== "padrao") {
+        filtrosAtivos.push("Ordenação");
+      }
+
+      indicadorFiltros.textContent = filtrosAtivos.length
+        ? filtrosAtivos.join(" • ")
+        : "Nenhum filtro aplicado";
+    }
+
+    // ==========================================
+    // APLICAR FILTROS E ORDENAÇÃO
+    // ==========================================
+
+    function obterProdutosFiltrados() {
+      const busca = normalizarTexto(campoBusca.value);
+      const categoriaSelecionada = filtroCategoria.value;
+      const situacaoEstoque = filtroEstoque.value;
+      const tipoOrdenacao = ordenacao.value;
+
+      let resultado = produtos.filter(produto => {
+        const nome = normalizarTexto(produto.nome);
+        const sku = normalizarTexto(produto.sku);
+        const categoria = normalizarTexto(produto.categoria);
+
+        const correspondeBusca =
+          !busca ||
+          nome.includes(busca) ||
+          sku.includes(busca) ||
+          categoria.includes(busca);
+
+        const correspondeCategoria =
+          categoriaSelecionada === "todas" ||
+          normalizarTexto(produto.categoria) === normalizarTexto(categoriaSelecionada);
+
+        const baixo = estoqueBaixo(produto);
+
+        const correspondeEstoque =
+          situacaoEstoque === "todos" ||
+          (situacaoEstoque === "baixo" && baixo) ||
+          (situacaoEstoque === "normal" && !baixo);
+
+        return correspondeBusca && correspondeCategoria && correspondeEstoque;
+      });
+
+      switch (tipoOrdenacao) {
+
+        case "nomeAsc":
+          resultado.sort((a, b) =>
+            String(a.nome).localeCompare(String(b.nome), "pt-BR")
+          );
+          break;
+
+        case "nomeDesc":
+          resultado.sort((a, b) =>
+            String(b.nome).localeCompare(String(a.nome), "pt-BR")
+          );
+          break;
+
+        case "precoAsc":
+          resultado.sort((a, b) =>
+            Number(a.precoVenda) - Number(b.precoVenda)
+          );
+          break;
+
+        case "precoDesc":
+          resultado.sort((a, b) =>
+            Number(b.precoVenda) - Number(a.precoVenda)
+          );
+          break;
+
+        case "quantidadeAsc":
+          resultado.sort((a, b) =>
+            Number(a.quantidade) - Number(b.quantidade)
+          );
+          break;
+
+        case "quantidadeDesc":
+          resultado.sort((a, b) =>
+            Number(b.quantidade) - Number(a.quantidade)
+          );
+          break;
+      }
+
+      return resultado;
+    }
+
+    // ==========================================
+    // RENDERIZAR PRODUTOS
+    // ==========================================
+
+    function renderizarProdutos() {
+      tabelaProdutos.innerHTML = "";
+
+      const produtosFiltrados = obterProdutosFiltrados();
+
+      if (produtosFiltrados.length === 0) {
+        const linha = document.createElement("tr");
+
+        const celula = criarCelula(
+          produtos.length === 0
+            ? "Nenhum produto cadastrado."
+            : "Nenhum produto encontrado com os filtros selecionados.",
+          "py-10 text-center text-gray-500"
+        );
+
+        celula.colSpan = ehAdministrador ? 7 : 6;
+
+        linha.appendChild(celula);
+        tabelaProdutos.appendChild(linha);
+      }
+
+      produtosFiltrados.forEach(produto => {
+        const linha = document.createElement("tr");
+        linha.className = "hover:bg-gray-50 transition";
+
+        const baixo = estoqueBaixo(produto);
+
+        linha.appendChild(
+          criarCelula(
+            produto.sku,
+            "py-4 px-6 font-medium text-gray-500"
+          )
+        );
+
+        const produtoCelula = document.createElement("td");
+        produtoCelula.className = "py-4 px-6 font-semibold text-gray-800";
+
+        const nome = document.createElement("div");
+        nome.textContent = produto.nome;
+
+        const categoria = document.createElement("div");
+        categoria.className = "text-sm font-normal text-gray-400 mt-0.5";
+        categoria.textContent = produto.categoria;
+
+        produtoCelula.appendChild(nome);
+        produtoCelula.appendChild(categoria);
+
+        linha.appendChild(produtoCelula);
+
+        linha.appendChild(
+          criarCelula(
+            formatarMoeda(produto.precoCusto),
+            "py-4 px-6 text-right text-gray-600"
+          )
+        );
+
+        linha.appendChild(
+          criarCelula(
+            formatarMoeda(produto.precoVenda),
+            "py-4 px-6 text-right font-medium"
+          )
+        );
+
+        const quantidadeCelula = document.createElement("td");
+        quantidadeCelula.className = "py-4 px-6 text-center";
+
+        const quantidade = document.createElement("span");
+
+        quantidade.className = baixo
+          ? "inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium bg-red-100 text-red-700"
+          : "inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700";
+
+        quantidade.textContent = `${produto.quantidade} un`;
+
+        quantidadeCelula.appendChild(quantidade);
+        linha.appendChild(quantidadeCelula);
+
+        const statusCelula = document.createElement("td");
+        statusCelula.className = "py-4 px-6 text-center";
+
+        const status = document.createElement("span");
+
+        status.className = baixo
+          ? "text-sm font-medium text-red-600"
+          : "text-sm font-medium text-green-600";
+
+        status.textContent = baixo ? "Estoque baixo" : "Normal";
+
+        statusCelula.appendChild(status);
+        linha.appendChild(statusCelula);
+
+        // AÇÕES DO ADMINISTRADOR
+        if (ehAdministrador) {
+          const acoesCelula = document.createElement("td");
+          acoesCelula.className = "py-4 px-6";
+
+          const acoes = document.createElement("div");
+          acoes.className = "flex items-center justify-center gap-2";
+
+          const botaoEditar = document.createElement("button");
+
+          botaoEditar.textContent = "Editar";
+          botaoEditar.className =
+            "text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-sm font-medium transition";
+
+          botaoEditar.addEventListener("click", () => {
+            abrirModalEdicao(produto);
+          });
+
+          const botaoExcluir = document.createElement("button");
+
+          botaoExcluir.textContent = "Excluir";
+          botaoExcluir.className =
+            "text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg text-sm font-medium transition";
+
+          botaoExcluir.addEventListener("click", () => {
+            abrirModalExclusao(produto);
+          });
+
+          acoes.appendChild(botaoEditar);
+          acoes.appendChild(botaoExcluir);
+
+          acoesCelula.appendChild(acoes);
+          linha.appendChild(acoesCelula);
+        }
+
+        tabelaProdutos.appendChild(linha);
+      });
+
+      // INDICADORES GERAIS
+      document.getElementById("totalProdutos").textContent = produtos.length;
+
+      document.getElementById("totalEstoqueBaixo").textContent =
+        produtos.filter(estoqueBaixo).length;
+
+      // CONTADOR DA LISTAGEM
+      document.getElementById("contadorResultados").textContent =
+        `Mostrando ${produtosFiltrados.length} de ${produtos.length} produtos`;
+
+      atualizarIndicadorFiltros();
+    }
+
+    // ==========================================
+    // CARREGAR PRODUTOS DA API
+    // ==========================================
+
+    async function carregarProdutos() {
+      try {
+        const resposta = await fetch("http://localhost:8081/produtos", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (resposta.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("usuario");
+
+          window.location.replace("login.html");
+          return;
+        }
+
+        if (!resposta.ok) {
+          throw new Error("Não foi possível carregar os produtos.");
+        }
+
+        produtos = await resposta.json();
+
+        atualizarCategorias();
+        renderizarProdutos();
+        verificarEstoqueBaixo();
+
+      } catch (erro) {
+        tabelaProdutos.innerHTML = "";
+
+        const linha = document.createElement("tr");
+
+        const celula = criarCelula(
+          erro.message || "Erro ao carregar produtos.",
+          "py-10 text-center text-red-600"
+        );
+
+        celula.colSpan = ehAdministrador ? 7 : 6;
+
+        linha.appendChild(celula);
+        tabelaProdutos.appendChild(linha);
+
+        mostrarMensagem(
+          "Verifique se o backend está funcionando e tente novamente.",
+          false
+        );
+      }
+    }
+
+    // ==========================================
+    // LIMPAR FILTROS
+    // ==========================================
+
+    document.getElementById("limparFiltros").addEventListener("click", function() {
+      campoBusca.value = "";
+      filtroCategoria.value = "todas";
+      filtroEstoque.value = "todos";
+      ordenacao.value = "padrao";
+
+      renderizarProdutos();
+    });
+
+    // ==========================================
+    // EVENTOS DOS FILTROS
+    // ==========================================
+
+    campoBusca.addEventListener("input", renderizarProdutos);
+    filtroCategoria.addEventListener("change", renderizarProdutos);
+    filtroEstoque.addEventListener("change", renderizarProdutos);
+    ordenacao.addEventListener("change", renderizarProdutos);
+
+    // ==========================================
+    // ABRIR POPUP DE EDIÇÃO
+    // ==========================================
+
+    function abrirModalEdicao(produto) {
+      produtoEmEdicao = produto;
+
+      document.getElementById("editarNome").value = produto.nome ?? "";
+      document.getElementById("editarSku").value = produto.sku ?? "";
+      document.getElementById("editarCategoria").value = produto.categoria ?? "";
+      document.getElementById("editarPrecoCusto").value = produto.precoCusto ?? 0;
+      document.getElementById("editarPrecoVenda").value = produto.precoVenda ?? 0;
+      document.getElementById("editarQuantidade").value = produto.quantidade ?? 0;
+      document.getElementById("editarEstoqueMinimo").value = produto.estoqueMinimo ?? 0;
+
+      erroEdicao.classList.add("hidden");
+
+      modalEdicao.classList.remove("hidden");
+      modalEdicao.classList.add("flex");
+
+      document.body.classList.add("overflow-hidden");
+
+      document.getElementById("editarNome").focus();
+    }
+
+    // ==========================================
+    // FECHAR POPUP DE EDIÇÃO
+    // ==========================================
+
+    function fecharModalEdicao() {
+      modalEdicao.classList.add("hidden");
+      modalEdicao.classList.remove("flex");
+
+      document.body.classList.remove("overflow-hidden");
+
+      produtoEmEdicao = null;
+      formEdicao.reset();
+    }
+
+    document.getElementById("fecharModal")
+      .addEventListener("click", fecharModalEdicao);
+
+    document.getElementById("cancelarEdicao")
+      .addEventListener("click", fecharModalEdicao);
+
+    modalEdicao.addEventListener("click", function(event) {
+      if (event.target === modalEdicao) {
+        fecharModalEdicao();
+      }
+    });
+
+    // ==========================================
+    // SALVAR EDIÇÃO
+    // ==========================================
+
+    formEdicao.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      if (!produtoEmEdicao) return;
+
+      const dados = {
+        nome: document.getElementById("editarNome").value.trim(),
+        sku: document.getElementById("editarSku").value.trim(),
+        categoria: document.getElementById("editarCategoria").value.trim(),
+        precoCusto: Number(document.getElementById("editarPrecoCusto").value),
+        precoVenda: Number(document.getElementById("editarPrecoVenda").value),
+        quantidade: Number(document.getElementById("editarQuantidade").value),
+        estoqueMinimo: Number(document.getElementById("editarEstoqueMinimo").value)
+      };
+
+      if (
+        !dados.nome ||
+        !dados.sku ||
+        !dados.categoria ||
+        !Number.isFinite(dados.precoCusto) ||
+        !Number.isFinite(dados.precoVenda) ||
+        !Number.isInteger(dados.quantidade) ||
+        !Number.isInteger(dados.estoqueMinimo) ||
+        dados.precoCusto < 0 ||
+        dados.precoVenda < 0 ||
+        dados.quantidade < 0 ||
+        dados.estoqueMinimo < 0
+      ) {
+        erroEdicao.textContent =
+          "Preencha todos os campos corretamente. Os valores não podem ser negativos.";
+
+        erroEdicao.classList.remove("hidden");
+        return;
+      }
+
+      botaoSalvarEdicao.disabled = true;
+      botaoSalvarEdicao.textContent = "Salvando...";
+
+      botaoSalvarEdicao.classList.add(
+        "opacity-60",
+        "cursor-not-allowed"
+      );
+
+      try {
+        const resposta = await fetch(
+          `http://localhost:8081/produtos/${produtoEmEdicao.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dados)
+          }
+        );
+
+        if (resposta.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("usuario");
+
+          window.location.replace("login.html");
+          return;
+        }
+
+        if (!resposta.ok) {
+          const erro = await resposta.text();
+
+          throw new Error(
+            erro || "Não foi possível atualizar o produto."
+          );
+        }
+
+        fecharModalEdicao();
+
+        mostrarMensagem(
+          "Produto atualizado com sucesso!",
+          true
+        );
+
+        await carregarProdutos();
+
+      } catch (erro) {
+        erroEdicao.textContent = erro.message;
+        erroEdicao.classList.remove("hidden");
+
+      } finally {
+        botaoSalvarEdicao.disabled = false;
+        botaoSalvarEdicao.textContent = "Salvar alterações";
+
+        botaoSalvarEdicao.classList.remove(
+          "opacity-60",
+          "cursor-not-allowed"
+        );
+      }
+    });
+
+    // ==========================================
+    // ABRIR POPUP DE EXCLUSÃO
+    // ==========================================
+
+    function abrirModalExclusao(produto) {
+      produtoParaExcluir = produto;
+
+      document.getElementById("nomeProdutoExclusao").textContent =
+        produto.nome;
+
+      erroExclusao.classList.add("hidden");
+
+      modalExclusao.classList.remove("hidden");
+      modalExclusao.classList.add("flex");
+
+      document.body.classList.add("overflow-hidden");
+    }
+
+    // ==========================================
+    // FECHAR POPUP DE EXCLUSÃO
+    // ==========================================
+
+    function fecharModalExclusao() {
+      modalExclusao.classList.add("hidden");
+      modalExclusao.classList.remove("flex");
+
+      document.body.classList.remove("overflow-hidden");
+
+      produtoParaExcluir = null;
+    }
+
+    document.getElementById("cancelarExclusao")
+      .addEventListener("click", fecharModalExclusao);
+
+    modalExclusao.addEventListener("click", function(event) {
+      if (event.target === modalExclusao) {
+        fecharModalExclusao();
+      }
+    });
+
+    // ==========================================
+    // CONFIRMAR EXCLUSÃO
+    // ==========================================
+
+    botaoConfirmarExclusao.addEventListener("click", async function() {
+      if (!produtoParaExcluir) return;
+
+      const botao = this;
+
+      botao.disabled = true;
+      botao.textContent = "Excluindo...";
+
+      botao.classList.add(
+        "opacity-60",
+        "cursor-not-allowed"
+      );
+
+      try {
+        const resposta = await fetch(
+          `http://localhost:8081/produtos/${produtoParaExcluir.id}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Authorization": `Bearer ${token}`
+            }
+          }
+        );
+
+        if (resposta.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("usuario");
+
+          window.location.replace("login.html");
+          return;
+        }
+
+        if (!resposta.ok) {
+          const erro = await resposta.text();
+
+          throw new Error(
+            erro || "Não foi possível excluir o produto."
+          );
+        }
+
+        fecharModalExclusao();
+
+        mostrarMensagem(
+          "Produto excluído com sucesso!",
+          true
+        );
+
+        await carregarProdutos();
+
+      } catch (erro) {
+        erroExclusao.textContent = erro.message;
+        erroExclusao.classList.remove("hidden");
+
+      } finally {
+        botao.disabled = false;
+        botao.textContent = "Sim, excluir";
+
+        botao.classList.remove(
+          "opacity-60",
+          "cursor-not-allowed"
+        );
+      }
+    });
+
+    // ==========================================
+    // FECHAR POPUPS COM ESC
+    // ==========================================
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key !== "Escape") return;
+
+      if (!modalEdicao.classList.contains("hidden")) {
+        fecharModalEdicao();
+      }
+
+      if (!modalExclusao.classList.contains("hidden")) {
+        fecharModalExclusao();
+      }
+
+      if (!modalEstoqueBaixo.classList.contains("hidden")) {
+        fecharModalEstoqueBaixo();
+      }
+
+      if (!sideMenu.classList.contains("translate-x-full")) {
+        fecharMenu();
+      }
+    });
+
+    // ==========================================
+    // INICIALIZAÇÃO
+    // ==========================================
+
+    if (token && usuario) {
+      carregarProdutos();
+    }
+  </script>
 
 </body>
 </html>
